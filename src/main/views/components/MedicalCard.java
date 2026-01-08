@@ -18,8 +18,8 @@ public class MedicalCard extends JPanel {
             BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
 
-        // Icon Placeholder (In a real app, use an ImageIcon)
-        JLabel iconLabel = new JLabel("🔘"); // Lucide icon placeholder
+        // Using a safe Unicode circle (\u25CF) instead of an emoji to prevent encoding errors
+        JLabel iconLabel = new JLabel("\u25CF"); 
         iconLabel.setFont(new Font("SansSerif", Font.PLAIN, 24));
         iconLabel.setForeground(accentColor);
         
@@ -41,10 +41,17 @@ public class MedicalCard extends JPanel {
         add(textPanel, BorderLayout.CENTER);
 
         // Hover Effect & Click Logic
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
         addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) { setBackground(new Color(245, 245, 250)); }
-            public void mouseExited(MouseEvent e) { setBackground(Color.WHITE); }
-            public void mousePressed(MouseEvent e) { onClick.run(); }
+            public void mouseEntered(MouseEvent e) { 
+                setBackground(new Color(245, 245, 250)); 
+            }
+            public void mouseExited(MouseEvent e) { 
+                setBackground(Color.WHITE); 
+            }
+            public void mousePressed(MouseEvent e) { 
+                onClick.run(); 
+            }
         });
     }
 }
