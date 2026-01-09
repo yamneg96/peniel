@@ -3,14 +3,26 @@ package main.views;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.regex.Pattern;
 import main.Application;
+import main.services.AuthService;
 
 public class RegisterPanel extends JPanel {
+    // Colors from React Theme
     private Color indigo600 = new Color(79, 70, 229);
     private Color indigo50 = new Color(238, 242, 255);
     private Color slate900 = new Color(15, 23, 42);
     private Color slate500 = new Color(100, 116, 139);
     private Color slate100 = new Color(241, 245, 249);
+
+    // Class-level variables to fix the symbol errors
+    private JTextField nameField = new JTextField();
+    private JTextField emailField = new JTextField();
+    private JTextField phoneField = new JTextField();
+    private JPasswordField passField = new JPasswordField();
+    private JComboBox<String> roleCombo;
+    private AuthService authService = new AuthService();
+    private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@(.+)$";
 
     public RegisterPanel(Application app) {
         setLayout(new BorderLayout());
@@ -21,10 +33,10 @@ public class RegisterPanel extends JPanel {
         // 1. LEFT SIDE: BRANDING
         JPanel leftPanel = new GradientBrandingPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.setBorder(new EmptyBorder(40, 60, 60, 60)); // Top padding reduced for button
+        leftPanel.setBorder(new EmptyBorder(40, 60, 60, 60));
 
         // --- BACK BUTTON ---
-        JButton backBtn = createGhostButton("← Back to Portal", Color.BLUE);
+        JButton backBtn = createGhostButton("← Back to Portal", Color.WHITE);
         backBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
         backBtn.addActionListener(e -> app.showPage("HOME"));
         leftPanel.add(backBtn);
@@ -73,18 +85,17 @@ public class RegisterPanel extends JPanel {
         fieldGrid.setOpaque(false);
         fieldGrid.setMaximumSize(new Dimension(500, 600));
 
-        fieldGrid.add(createLabeledField("FULL NAME", new JTextField(), "Dr. John Doe"));
-        fieldGrid.add(createLabeledField("WORK EMAIL", new JTextField(), "yourname@gmail.com"));
-        fieldGrid.add(createLabeledField("PHONE NUMBER", new JTextField(), "0911223344"));
+        fieldGrid.add(createLabeledField("FULL NAME", nameField, "Dr. John Doe"));
+        fieldGrid.add(createLabeledField("WORK EMAIL", emailField, "yourname@gmail.com"));
+        fieldGrid.add(createLabeledField("PHONE NUMBER", phoneField, "0911223344"));
         
-        JPasswordField passField = new JPasswordField();
         fieldGrid.add(createLabeledField("PASSWORD", passField, "••••••••"));
 
         JLabel roleLabel = new JLabel("PROFESSIONAL ROLE");
         roleLabel.setFont(new Font("SansSerif", Font.BOLD, 10));
         roleLabel.setForeground(slate500);
         String[] roles = {"Clinical Year 1 (C1)", "Clinical Year 2 (C2)", "Medical Staff (Intern)"};
-        JComboBox<String> roleCombo = new JComboBox<>(roles);
+        roleCombo = new JComboBox<>(roles);
         roleCombo.setPreferredSize(new Dimension(0, 45));
         fieldGrid.add(roleLabel);
         fieldGrid.add(roleCombo);
@@ -110,6 +121,7 @@ public class RegisterPanel extends JPanel {
         submitBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
         submitBtn.setFocusPainted(false);
         submitBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+        submitBtn.addActionListener(e -> handleRegister(app));
         rightPanel.add(submitBtn);
 
         splitPane.add(leftPanel);
@@ -129,6 +141,25 @@ public class RegisterPanel extends JPanel {
         ));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return btn;
+    }
+
+    private void handleRegister(Application app) {
+        String email = emailField.getText();
+        String password = new String(passField.getPassword());
+        
+        if (!Pattern.matches(EMAIL_PATTERN, email)) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid email.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            // Assuming your AuthService has a register method, otherwise update to match your API
+            if(authService.login(email, password)) { 
+                app.showPage("DASHBOARD");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Registration Failed: " + ex.getMessage(), "Auth Failed", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private JPanel createLabeledField(String label, JTextField field, String placeholder) {
