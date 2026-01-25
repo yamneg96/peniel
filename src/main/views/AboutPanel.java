@@ -92,7 +92,7 @@ public class AboutPanel extends JPanel {
         mainContent.add(Box.createRigidArea(new Dimension(0, 80)));
 
         // 6. FINAL CONTACT CALL-TO-ACTION
-        JButton contactBtn = new JButton("SECURE INQUIRY: yamlaknegash96@gmail.com");
+        JButton contactBtn = new JButton("SECURE INQUIRY: negussupeniel@gmail.com");
         contactBtn.setPreferredSize(new Dimension(500, 60));
         contactBtn.setMaximumSize(new Dimension(500, 60));
         contactBtn.setBackground(indigo600);
