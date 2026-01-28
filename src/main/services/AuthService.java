@@ -15,6 +15,11 @@ public class AuthService {
         ensureDataDirectory();
         loadUsersFromCSV();
         System.out.println("AuthService initialized with " + userDatabase.size() + " users");
+        // Debug: Print all loaded users
+        for (String email : userDatabase.keySet()) {
+            User user = userDatabase.get(email);
+            System.out.println("Loaded user: " + user.getEmail() + " - " + user.getName() + " - " + user.getRole());
+        }
     }
     
     private void ensureDataDirectory() {
@@ -34,6 +39,7 @@ public class AuthService {
                     User admin = new User("Admin User", "admin@hospital.com", "password123", 
                                         "1234567890", "Medical Staff");
                     writer.println(admin.toCSV());
+                    userDatabase.put(admin.getEmail().toLowerCase(), admin);
                 }
                 System.out.println("Created users CSV file with default admin");
             }
@@ -60,6 +66,9 @@ public class AuthService {
                     User user = User.fromCSV(line);
                     if (user != null) {
                         userDatabase.put(user.getEmail().toLowerCase(), user);
+                        System.out.println("Loaded from CSV: " + user.getEmail() + " as " + user.getRole());
+                    } else {
+                        System.err.println("Failed to parse CSV line: " + line);
                     }
                 }
             }
@@ -110,19 +119,35 @@ public class AuthService {
         // Load fresh data in case file was modified
         loadUsersFromCSV();
         
+        // Debug: Print all users in database
+        System.out.println("Looking for user: " + email);
+        System.out.println("Users in database: " + userDatabase.keySet());
+        
         // Check if user exists
         User user = userDatabase.get(email);
         if (user == null) {
             throw new Exception("User not found. Please check your email or register.");
         }
         
+        // Debug: Print user details
+        System.out.println("Found user: " + user.getEmail() + " - Name: " + user.getName() + " - Role: " + user.getRole());
+        
         // Check password (in real app, you'd hash passwords)
         if (!user.getPassword().equals(password)) {
             throw new Exception("Invalid password. Please try again.");
         }
         
-        // Create user session
+        // Create user session - THIS IS THE CRITICAL PART
+        System.out.println("Calling UserSession.login() for: " + user.getEmail());
         UserSession.login(user);
+        
+        // Verify session was created
+        if (UserSession.isLoggedIn()) {
+            System.out.println("UserSession confirmed - Current user: " + UserSession.getCurrentUserName());
+            System.out.println("UserSession role: " + UserSession.getCurrentUserRole());
+        } else {
+            System.out.println("WARNING: UserSession not set properly!");
+        }
         
         // Log login activity
         logLoginActivity(email, true);

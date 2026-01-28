@@ -9,10 +9,21 @@ public class UserSession {
     
     // Login user and create session
     public static void login(User user) {
+        if (user == null) {
+            System.err.println("ERROR: Cannot login with null user!");
+            return;
+        }
+        
         currentUser = user;
         isLoggedIn = true;
         sessionToken = generateSessionToken();
-        System.out.println("Session created for: " + user.getEmail());
+        
+        System.out.println("=== USER SESSION CREATED ===");
+        System.out.println("User: " + user.getName());
+        System.out.println("Email: " + user.getEmail());
+        System.out.println("Role: " + user.getRole());
+        System.out.println("Session Token: " + sessionToken);
+        System.out.println("============================");
     }
     
     // Logout user and clear session
@@ -35,17 +46,28 @@ public class UserSession {
     
     // Get current user's name
     public static String getCurrentUserName() {
-        return currentUser != null ? currentUser.getName() : "Guest";
+        if (currentUser == null) {
+            System.out.println("WARNING: getCurrentUserName() called but currentUser is null!");
+            return "Guest";
+        }
+        return currentUser.getName();
     }
     
     // Get current user's email
     public static String getCurrentUserEmail() {
-        return currentUser != null ? currentUser.getEmail() : "";
+        if (currentUser == null) {
+            return "";
+        }
+        return currentUser.getEmail();
     }
     
     // Get current user's role
     public static String getCurrentUserRole() {
-        return currentUser != null ? currentUser.getRole() : "Guest";
+        if (currentUser == null) {
+            System.out.println("WARNING: getCurrentUserRole() called but currentUser is null!");
+            return "Guest";
+        }
+        return currentUser.getRole();
     }
     
     // Get session token

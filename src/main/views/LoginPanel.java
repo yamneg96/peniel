@@ -279,15 +279,23 @@ public class LoginPanel extends JPanel {
                     // Clear sensitive data
                     passField.setText("");
                     
+                    // Debug: Check UserSession immediately
+                    System.out.println("After login - UserSession status:");
+                    System.out.println("Is logged in: " + UserSession.isLoggedIn());
+                    System.out.println("User name: " + UserSession.getCurrentUserName());
+                    System.out.println("User role: " + UserSession.getCurrentUserRole());
+                    
                     // Show success message
                     SwingUtilities.invokeLater(() -> {
                         JOptionPane.showMessageDialog(LoginPanel.this,
-                            "Login successful! Welcome to the dashboard.",
+                            "Login successful!\n" +
+                            "Welcome, " + UserSession.getCurrentUserName() + "!\n" +
+                            "Role: " + UserSession.getCurrentUserRole(),
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE);
                     });
                     
-                    // Delay before navigating
+                    // Navigate to dashboard after delay
                     Timer successTimer = new Timer(1000, ev -> {
                         app.showPage("DASHBOARD");
                         // Reset button state
